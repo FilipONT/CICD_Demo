@@ -24,7 +24,6 @@ if ~occupancy
     return;
 end
 
-
 temperatureError = setpoint - currentTemp;
 
 if temperatureError > deadband
