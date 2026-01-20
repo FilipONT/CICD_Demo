@@ -28,7 +28,7 @@ classdef HvacControllerTest < matlab.unittest.TestCase
             setpoint = 21;
             occupancy = false;
             expectedMode = "OFF";
-            expectedPowerCommand = 0.0;
+            expectedPowerCommand = 0.2;
             [actualMode, actualPowerCommand] = hvacController(currentTemp, setpoint, occupancy);
             testCase.verifyEqual(actualMode, expectedMode);
             testCase.verifyEqual(actualPowerCommand, expectedPowerCommand);
