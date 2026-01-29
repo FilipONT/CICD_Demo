@@ -1,0 +1,132 @@
+
+name: GitHub MATLAB Workflow
+on: # You must define at least one trigger for each workflow.
+  workflow_dispatch:  # Set manual triggers as an optional trigger.
+  pull_request:       # Set pull_request as an automatic trigger. 
+                      # By default, a pull_request runs when a pull_request 
+                      # event's activity type is opened, synchronize, or reopened
+    # opened: This triggers the workflow when a pull request is initially opened.
+    # synchronize: This triggers the workflow when new commits are pushed to a pull request branch. This includes any time the pull request's head branch is updated with new commits.
+    # reopened: This triggers the workflow when a previously closed pull request is reopened
+    types: [opened, synchronize, reopened]
+env:
+  MW_SUPPORT_PACKAGE_ROOT: 'C:\\ProgramData\\MATLAB\\SupportPackages\\R2025a\\bin'
+  MW_RELATIVE_PROJECT_PATH: ''
+  MW_PIPELINE_GEN_DIRECTORY: "_pipelineGen_" 
+  # Note: You should never hardcode secrets or tokens in the YAML file.
+  # For JFrog Artifactory storage services, you need to set the JFrog API token in GitHub repository secrets with the 'ARTIFACTORY_API_TOKEN_SECRET' ID. 
+  # For S3 storage services, you need to set the AWS S3 access key in GitHub repository secrets with the 'S3_AWS_SECRET_ACCESS_KEY_SECRET' ID. 
+  # For Azure Blob storage services, you need to set the Azure storage account connection string in GitHub repository secrets with the 'AZ_CONNECTION_STRING_SECRET' ID. 
+jobs:
+  build_files:
+    runs-on: 'self-hosted'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Copy workflow files
+        run: |
+          mkdir "${{env.MW_RELATIVE_PROJECT_PATH}}${{env.MW_PIPELINE_GEN_DIRECTORY}}" 
+          cp "/path/to/ir_dag.json" "${{env.MW_RELATIVE_PROJECT_PATH}}${{env.MW_PIPELINE_GEN_DIRECTORY}}/" 
+          cp "/path/to/simulink_pipeline.yml" "${{env.MW_RELATIVE_PROJECT_PATH}}${{env.MW_PIPELINE_GEN_DIRECTORY}}/" 
+      - name: Upload workflow files
+        uses: actions/upload-artifact@v4
+        with:
+          name: workflow_generated_files
+          path: ${{env.MW_RELATIVE_PROJECT_PATH}}${{env.MW_PIPELINE_GEN_DIRECTORY}}/
+  
+  ModelTestingMetrics_Demo3_model1:
+    needs: [build_files]
+    if: always() && !cancelled()
+    uses: ./.github/workflows/generic-job.yml
+    secrets: inherit
+    with:
+      job-name: ModelTestingMetrics_Demo3_model1 
+  
+  ModelTestingMetrics_Demo3_model2:
+    needs: [ModelTestingMetrics_Demo3_model1]
+    if: always() && !cancelled()
+    uses: ./.github/workflows/generic-job.yml
+    secrets: inherit
+    with:
+      job-name: ModelTestingMetrics_Demo3_model2 
+  
+  ModelTestingMetrics_Demo3_model3:
+    needs: [ModelTestingMetrics_Demo3_model2]
+    if: always() && !cancelled()
+    uses: ./.github/workflows/generic-job.yml
+    secrets: inherit
+    with:
+      job-name: ModelTestingMetrics_Demo3_model3 
+  
+  padv_builtin_task_CollectMetrics_Demo3_model1:
+    needs: [ModelTestingMetrics_Demo3_model3]
+    if: always() && !cancelled()
+    uses: ./.github/workflows/generic-job.yml
+    secrets: inherit
+    with:
+      job-name: padv_builtin_task_CollectMetrics_Demo3_model1 
+  
+  padv_builtin_task_GenerateSimulinkWebView_Demo3_model1:
+    needs: [padv_builtin_task_CollectMetrics_Demo3_model1]
+    if: always() && !cancelled()
+    uses: ./.github/workflows/generic-job.yml
+    secrets: inherit
+    with:
+      job-name: padv_builtin_task_GenerateSimulinkWebView_Demo3_model1 
+  
+  padv_builtin_task_RunModelStandards_Demo3_model1:
+    needs: [padv_builtin_task_GenerateSimulinkWebView_Demo3_model1]
+    if: always() && !cancelled()
+    uses: ./.github/workflows/generic-job.yml
+    secrets: inherit
+    with:
+      job-name: padv_builtin_task_RunModelStandards_Demo3_model1 
+  
+  padv_builtin_task_CollectMetrics_Demo3_model2:
+    needs: [padv_builtin_task_RunModelStandards_Demo3_model1]
+    if: always() && !cancelled()
+    uses: ./.github/workflows/generic-job.yml
+    secrets: inherit
+    with:
+      job-name: padv_builtin_task_CollectMetrics_Demo3_model2 
+  
+  padv_builtin_task_GenerateSimulinkWebView_Demo3_model2:
+    needs: [padv_builtin_task_CollectMetrics_Demo3_model2]
+    if: always() && !cancelled()
+    uses: ./.github/workflows/generic-job.yml
+    secrets: inherit
+    with:
+      job-name: padv_builtin_task_GenerateSimulinkWebView_Demo3_model2 
+  
+  padv_builtin_task_RunModelStandards_Demo3_model2:
+    needs: [padv_builtin_task_GenerateSimulinkWebView_Demo3_model2]
+    if: always() && !cancelled()
+    uses: ./.github/workflows/generic-job.yml
+    secrets: inherit
+    with:
+      job-name: padv_builtin_task_RunModelStandards_Demo3_model2 
+  
+  padv_builtin_task_CollectMetrics_Demo3_model3:
+    needs: [padv_builtin_task_RunModelStandards_Demo3_model2]
+    if: always() && !cancelled()
+    uses: ./.github/workflows/generic-job.yml
+    secrets: inherit
+    with:
+      job-name: padv_builtin_task_CollectMetrics_Demo3_model3 
+  
+  padv_builtin_task_GenerateSimulinkWebView_Demo3_model3:
+    needs: [padv_builtin_task_CollectMetrics_Demo3_model3]
+    if: always() && !cancelled()
+    uses: ./.github/workflows/generic-job.yml
+    secrets: inherit
+    with:
+      job-name: padv_builtin_task_GenerateSimulinkWebView_Demo3_model3 
+  
+  padv_builtin_task_RunModelStandards_Demo3_model3:
+    needs: [padv_builtin_task_GenerateSimulinkWebView_Demo3_model3]
+    if: always() && !cancelled()
+    uses: ./.github/workflows/generic-job.yml
+    secrets: inherit
+    with:
+      job-name: padv_builtin_task_RunModelStandards_Demo3_model3 
+  
